@@ -1,3 +1,5 @@
+# Decoding Relationships
+
 It's very common to have custom models that relate to other custom models.
 When all your models conform to `Decodable`, Argo makes it really easy to
 populate those relationships. Let's look at a `Post` and `Comment` model and
@@ -12,7 +14,7 @@ struct Post {
 }
 ```
 
-Then, implementing `Decodable` for `Post` we get this:
+Then, our implemention of `Decodable` for `Post` looks like this:
 
 ```swift
 extension Post: Decodable {
@@ -24,7 +26,7 @@ extension Post: Decodable {
 }
 ```
 
-And the json looks like this:
+And the JSON looks like this:
 
 ```
 {
@@ -33,11 +35,10 @@ And the json looks like this:
 }
 ```
 
-Great! Now we can decode json into `Post` models. Let's be real, we can't have
-posts without comments! Comments are like 90% of the fun on the internet. (See
-reddit, YouTube, etc)
+Great! Now we can decode JSON into `Post` models. Let's be real, we can't have
+posts without comments! Comments are like 90% of the fun on the internet.
 
-Let's look at a simple `Comment` model:
+So let's add a simple `Comment` model:
 
 ```swift
 struct Comment {
@@ -73,10 +74,11 @@ extension Post: Decodable {
 }
 ```
 
-We added the array as a property on out `Post` model. Then we added a line to
-decode the comments array from the json. We use `<||` because it is an _Array_.
+We added the array as a property on our `Post` model. Then we added a line to
+decode the comments array from the JSON. Notice how we use `<||` instead of
+`<|` with `comments` because it is an _Array_.
 
-With the embedded comments array, the json may look like this:
+With the embedded comments array, the JSON could look like this:
 
 ```
 {
@@ -85,16 +87,16 @@ With the embedded comments array, the json may look like this:
   "comments": [
     {
       "author": "Lucille",
-      "text": "Really? Did \"nothing\" cancel?"
+      "text": "Really? Did 'nothing' cancel?"
     }
   ]
 }
 ```
 
-Next, let's say the author's name isn't good enough and we want the `User`
-relationship to the `Post` and `Comment`. If you use the `User` code from
-[Basic Usage], we can simply replace the `String` type with `User` on the
-`author` property of out models.
+Storing the name of the author with a post or comment isn't very flexible.
+What we really want to do is tie posts and comments to users. If we use the
+`User` struct from [Basic Usage], we can simply change the `author` property
+from `String` to `User`.
 
 [Basic Usage]: Basic-Usage.md
 
@@ -128,7 +130,7 @@ extension Comment: Decodable {
 }
 ```
 
-Where the json now has an embedded `User`:
+Now the JSON for a post could look like this:
 
 ```
 {
@@ -143,16 +145,17 @@ Where the json now has an embedded `User`:
         "id": 1,
         "name": "Lucille"
       },
-      "text": "Really? Did \"nothing\" cancel?"
+      "text": "Really? Did 'nothing' cancel?"
     }
   ]
 }
 ```
 
-Yep that's right, the only thing that changed was `String` to `User`!
+Yep that's right, the only thing that changed was the type of `author`: it was
+a `String` and now it's a `User`!
 
-We can also create a convenience property to get directly to the user's name
-instead of having to deal with the model later.
+We can also create a convenience property to directly access the user's name
+instead of having to compute it from the model later.
 
 ```swift
 struct Post {
@@ -190,4 +193,3 @@ extension Comment: Decodable {
 
 Using an array of strings allows us to traverse embedded objects to get at the
 value we want.
-
