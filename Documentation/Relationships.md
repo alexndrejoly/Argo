@@ -13,7 +13,7 @@ struct Post {
 }
 ```
 
-Then, our implemention of `Decodable` for `Post` looks like this:
+Then, our implementation of `Decodable` for `Post` looks like this:
 
 ```swift
 extension Post: Decodable {
@@ -73,9 +73,9 @@ extension Post: Decodable {
 }
 ```
 
-We added the array as a property on our `Post` model. Then we added a line to
-decode the comments array from the JSON. Notice how we use `<||` instead of
-`<|` with `comments` because it is an _Array_.
+We added `comments` as a property on our `Post` model. Then we added a line to
+decode the comments from the JSON. Notice how we use `<||` instead of `<|` with
+`comments` because it is an _Array_.
 
 With the embedded comments array, the JSON could look like this:
 
@@ -95,7 +95,7 @@ With the embedded comments array, the JSON could look like this:
 Storing the name of the author with a post or comment isn't very flexible.
 What we really want to do is tie posts and comments to users. If we use the
 `User` struct from [Basic Usage], we can simply change the `author` property
-from `String` to `User`.
+from `String` to `User`. No joke! Take a look:
 
 [Basic Usage]: Basic-Usage.md
 
@@ -150,9 +150,6 @@ Now the JSON for a post could look like this:
 }
 ```
 
-Yep that's right, the only thing that changed was the type of `author`: it was
-a `String` and now it's a `User`!
-
 We can also create a convenience property to directly access the user's name
 instead of having to compute it from the model later.
 
@@ -190,5 +187,5 @@ extension Comment: Decodable {
 }
 ```
 
-Using an array of strings allows us to traverse embedded objects to get at the
-value we want.
+Using an array of strings in `<*> j <| ["author", "name"]` allows us to
+traverse embedded objects to get at the value we want.
