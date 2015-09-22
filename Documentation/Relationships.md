@@ -1,9 +1,8 @@
 # Decoding Relationships
 
-It's very common to have custom models that relate to other custom models.
-When all your models conform to `Decodable`, Argo makes it really easy to
-populate those relationships. Let's look at a `Post` and `Comment` model and
-how they relate.
+It's very common to have models that relate to other models. When all your
+models conform to `Decodable`, Argo makes it really easy to populate those
+relationships. Let's look at a `Post` and `Comment` model and how they relate.
 
 Our `Post` model will be very simple:
 
@@ -31,7 +30,7 @@ And the JSON looks like this:
 ```
 {
   "author": "Gob Bluth",
-  "text": "I've made a huge mistake.."
+  "text": "I've made a huge mistake."
 }
 ```
 
