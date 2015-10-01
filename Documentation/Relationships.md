@@ -100,6 +100,19 @@ from `String` to `User`. No joke! Take a look:
 [Basic Usage]: Basic-Usage.md
 
 ```swift
+struct User {
+  let id: Int
+  let name: String
+}
+
+extension User: Decodable {
+  static func decode(j: JSON) -> Decoded<User> {
+    return curry(User.init)
+      <^> j <| "id"
+      <*> j <| "name"
+  }
+}
+
 struct Post {
   let author: User
   let text: String
@@ -149,43 +162,3 @@ Now the JSON for a post could look like this:
   ]
 }
 ```
-
-We can also create a convenience property to directly access the user's name
-instead of having to compute it from the model later.
-
-```swift
-struct Post {
-  let author: User
-  let authorName: String
-  let text: String
-  let comments: [Comment]
-}
-
-extension Post: Decodable {
-  static func decode(j: JSON) -> Decoded<Post> {
-    return curry(self.init)
-      <^> j <| "author"
-      <*> j <| ["author", "name"]
-      <*> j <| "text"
-      <*> j <|| "comments"
-  }
-}
-
-struct Comment {
-  let author: User
-  let authorName: String
-  let text: String
-}
-
-extension Comment: Decodable {
-  static func decode(j: JSON) -> Decoded<Comment> {
-    return curry(self.init)
-      <^> j <| "author"
-      <*> j <| ["author", "name"]
-      <*> j <| "text"
-  }
-}
-```
-
-Using an array of strings in `<*> j <| ["author", "name"]` allows us to
-traverse embedded objects to get at the value we want.
