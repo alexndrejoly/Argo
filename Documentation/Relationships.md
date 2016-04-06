@@ -4,7 +4,16 @@ It's very common to have models that relate to other models. When all your
 models conform to `Decodable`, Argo makes it really easy to populate those
 relationships. Let's look at a `Post` and `Comment` model and how they relate.
 
-Our `Post` model will be very simple:
+Our server is sending us the JSON for the `Post` model:
+
+```
+{
+  "author": "Gob Bluth",
+  "text": "I've made a huge mistake."
+}
+```
+
+Our `Post` model will then be:
 
 ```swift
 struct Post {
@@ -13,7 +22,7 @@ struct Post {
 }
 ```
 
-Then, our implementation of `Decodable` for `Post` looks like this:
+And, our implementation of `Decodable` for `Post` looks like this:
 
 ```swift
 extension Post: Decodable {
@@ -25,19 +34,26 @@ extension Post: Decodable {
 }
 ```
 
-And the JSON looks like this:
+Great! Now we can decode JSON into `Post` models. However, let's be real, we
+can't have posts without comments! Comments are like 90% of the fun on the
+internet.
+
+Most likely the JSON will contain an embedded array of `Comment` models:
 
 ```
 {
-  "author": "Gob Bluth",
-  "text": "I've made a huge mistake."
+  "author": "Lindsay",
+  "text": "I have the afternoon free.",
+  "comments": [
+    {
+      "author": "Lucille",
+      "text": "Really? Did 'nothing' cancel?"
+    }
+  ]
 }
 ```
 
-Great! Now we can decode JSON into `Post` models. Let's be real, we can't have
-posts without comments! Comments are like 90% of the fun on the internet.
-
-So let's add a simple `Comment` model:
+So then `Comment` will look like:
 
 ```swift
 struct Comment {
@@ -77,27 +93,35 @@ We added `comments` as a property on our `Post` model. Then we added a line to
 decode the comments from the JSON. Notice how we use `<||` instead of `<|` with
 `comments` because it is an _Array_.
 
-With the embedded comments array, the JSON could look like this:
-
-```
-{
-  "author": "Lindsay",
-  "text": "I have the afternoon free.",
-  "comments": [
-    {
-      "author": "Lucille",
-      "text": "Really? Did 'nothing' cancel?"
-    }
-  ]
-}
-```
-
 Storing the name of the author with a post or comment isn't very flexible.
 What we really want to do is tie posts and comments to users. If we use the
 `User` struct from [Basic Usage], we can simply change the `author` property
 from `String` to `User`. No joke! Take a look:
 
 [Basic Usage]: Basic-Usage.md
+
+First, our JSON will contain the embedded user models like so:
+
+```
+{
+  "author": {
+    "id": 53,
+    "name": "Lindsay"
+  },
+  "text": "I have the afternoon free.",
+  "comments": [
+    {
+      "author": {
+        "id": 1,
+        "name": "Lucille"
+      },
+      "text": "Really? Did 'nothing' cancel?"
+    }
+  ]
+}
+```
+
+Then, we can add the `User` model to `Post` and `Comment`:
 
 ```swift
 struct User {
@@ -142,28 +166,7 @@ extension Comment: Decodable {
 }
 ```
 
-Now the JSON for a post could look like this:
-
-```
-{
-  "author": {
-    "id": 53,
-    "name": "Lindsay"
-  },
-  "text": "I have the afternoon free.",
-  "comments": [
-    {
-      "author": {
-        "id": 1,
-        "name": "Lucille"
-      },
-      "text": "Really? Did 'nothing' cancel?"
-    }
-  ]
-}
-```
-
-"How does this work?", you ask? Well, Argo is smart enough to know it can decode
+That's it! "How does this work?", you ask? Well, Argo is smart enough to know it can decode
 anything that conforms to `Decodable` because internally, Argo is simply calling
 each type's `decode` function. In this example, `Post`, `Comment`, and `User`
 all conform to `Decodable` so Argo looks at those types the same way it looks at
