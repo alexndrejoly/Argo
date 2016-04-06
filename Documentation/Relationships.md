@@ -162,3 +162,9 @@ Now the JSON for a post could look like this:
   ]
 }
 ```
+
+"How does this work?", you ask? Well, Argo is smart enough to know it can decode
+anything that conforms to `Decodable` because internally, Argo is simply calling
+each type's `decode` function. In this example, `Post`, `Comment`, and `User`
+all conform to `Decodable` so Argo looks at those types the same way it looks at
+`String` or `Int`.
