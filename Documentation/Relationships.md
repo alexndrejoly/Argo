@@ -31,7 +31,9 @@ struct Post {
 }
 ```
 
-And, our implementation of `Decodable` for `Post` looks like this:
+For now, we only need the user's name and we can use the special embedded syntax
+to get it. Then our implementation of `Decodable` for `Post` looks
+like this:
 
 ```swift
 extension Post: Decodable {
@@ -129,8 +131,8 @@ extension User: Decodable {
 }
 ```
 
-We can simply change the `author` property from `String` to `User`. No joke!
-Take a look:
+We can simply change the `author` property from `String` to `User` and point the
+decoder directly at the author object. No joke! Take a look:
 
 ```swift
 struct Post {
@@ -162,4 +164,6 @@ extension Comment: Decodable {
 }
 ```
 
-That's it!
+That's it! Argo's use of Generics and the `Decodable` protocol means that
+supporting custom types is straightforward, since that's internally the same way
+Argo decodes Swift's standard types.
